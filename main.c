@@ -56,25 +56,26 @@ int main(int argc, char* argv[]) {
 
 	readMoviesFromCSV(movieFile);
 
-	while ((choice = menu()) != EXIT){
+	while ((choice = menu()) != EXIT) {
 
 		switch (choice) {
 
-			case FILTER_BY_YEAR:
-				printMoviesInYear();
-				break;
+		case FILTER_BY_YEAR:
+			printMoviesInYear();
+			break;
 
-			case FILTER_BY_HIGHEST_RATING:
-				printHighestRatingPerYear();
-				break;
+		case FILTER_BY_HIGHEST_RATING:
+			printHighestRatingPerYear();
+			break;
 
-			case FILTER_BY_LANGUAGE:
-				printMoviesInSpecifiedLanguage();
-				break;
+		case FILTER_BY_LANGUAGE:
+			printMoviesInSpecifiedLanguage();
+			break;
 
-			case EXIT:
-				break;
+		case EXIT:
+			break;
 		}
+	}
 
 	return 0;
 }

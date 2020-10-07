@@ -11,17 +11,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*Each movie has a title, a year, a list of languages, and a rating*/
+/* Each movie has a title, a year, a list of languages, a rating,
+ * and a pointer to the next movie in the list
+ */
 struct movie {
 	char* title;
 	int year;
 	char* languages;
 	int rating;
+	struct movie* next;
 };
 
-struct movie *createMovieFromLine(char* currentLine);
+struct movie *createMovieFromLine(char*);
 
-void readMoviesFromCSV(FILE* movieFile);
+void readMoviesFromCSV(FILE*);
 
 int menu();
 
