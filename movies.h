@@ -16,15 +16,17 @@
  */
 struct movie {
 	char* title;
-	int year;
-	char* languages;
-	int rating;
+	int* year;
+	char** languages;
+	double* rating;
 	struct movie* next;
 };
 
+char** formatLanguageStringArray(char*);
+
 struct movie *createMovieFromLine(char*);
 
-void readMoviesFromCSV(FILE*);
+struct movie *createLinkedListMoviesFromCSV(FILE*);
 
 int menu();
 

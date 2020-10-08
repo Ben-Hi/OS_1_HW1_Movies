@@ -6,15 +6,74 @@
 **************************************************************/
 #include "movies.h"
 
+char** formatLanguageStringArray(char* token) {
+	char* languageSavePtr;
+	char* unformattedArrayToken;
+	char** languageArray;
+	int i = 0;
+
+	/* Remove the '[' character*/
+	strcpy(unformattedArrayToken, token + 1);
+
+	/* Remove the ']' character*/
+	unformattedArrayToken[strlen(unformattedArrayToken) - 1] = '\0';
+
+	while (token != NULL) {
+		if (i == 0) {
+			token = strtok_r(unformattedArrayToken, ";", &languageSavePtr);
+			languageArray[i] = &token;
+		}
+
+		else {
+			token = strtok_r(NULL, ";", &languageSavePtr);
+			languageArray[i] = &token;
+		}
+
+		i++;
+	}
+}
+
 
 struct movie *createMovieFromLine(char* fileLine) {
 	/* //create new movie node
 	*     //parse line into tokens
 	*     //put tokens into new movie node
 	*/
+	struct movie* movieNode = (struct movie*)malloc(sizeof(struct movie));
+	char* savePtr;
+
+	/* Retrieve the title token*/
+	char* token = strtok_r(fileLine, ",", &savePtr);
+	movieNode->title = (struct movie*)calloc(strlen(token) + 1, sizeof(char));
+	strcpy(movieNode->title, token);
+
+	/* Retrieve the Year token*/
+	token = strtok_r(NULL, ",", &savePtr);
+	movieNode->year = (int*)malloc(sizeof(int));
+	movieNode->year = atoi(token);
+
+	/* Retrieve the Languages token*/
+	movieNode->languages = (char**)malloc(5 * sizeof(char*));
+
+	for (int i = 0; i < 5; i++) {
+		movieNode->languages[i] = (char*)malloc(20 * sizeof(char));
+	}
+
+	token = strtok_r(NULL, ",", &savePtr);
+
+	movieNode->languages = formatLanguageStringArray(token);
+
+	/* Retrieve the Rating token*/
+	token = strtok_r(NULL, "\n", &savePtr);
+	movieNode->rating = (double*)malloc(sizeof(double));
+	movieNode->rating = strtod(token, NULL);
+
+	movieNode->next = NULL;
+
+	return movieNode;
 }
 
-void readMoviesFromCSV(FILE* movieFile) {
+struct movie *createLinkedListMoviesFromCSV(FILE* movieFile) {
 	/* //Get movie info from .csv file
 	*    //create movie nodes from each file line
 	*/
@@ -27,6 +86,10 @@ void readMoviesFromCSV(FILE* movieFile) {
 	struct movie* head = NULL;
 	struct movie* tail = NULL;
 
+	/* The first line has no movies*/
+	getline(&nextFileLine, &len, movieFile);
+
+	/* Make movie nodes and link them until there are no more lines in the file*/
 	while ((numberOfCharsRead = getline(&nextFileLine, &len, movieFile)) != -1) {
 		struct movie* newMovieNode = createMovieFromLine(nextFileLine);
 
@@ -42,6 +105,11 @@ void readMoviesFromCSV(FILE* movieFile) {
 			tail = newMovieNode;
 		}
 	}
+
+	free(nextFileLine);
+	fclose(movieFile);
+
+	return head;
 }
 
 /*

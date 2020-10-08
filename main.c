@@ -14,6 +14,7 @@
 #define FILTER_BY_HIGHEST_RATING 2
 #define FILTER_BY_LANGUAGE 3
 #define EXIT 4
+
 int main(int argc, char* argv[]) {
 	/****************************************
 	* //Get movie info from .csv file
@@ -45,10 +46,12 @@ int main(int argc, char* argv[]) {
 	* 
 	*   //4. Exit
 	*/
+
+	/*
 	int choice = 0;
 	FILE* movieFile;
 
-	/*Check if file can be opened*/
+	
 	if (!(movieFile = open(argv[1]))) {
 		printf("Could not open file.\n");
 		return 0;
@@ -76,6 +79,7 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 	}
+	*/
 
 	return 0;
 }
