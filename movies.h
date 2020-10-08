@@ -22,11 +22,13 @@ struct movie {
 	struct movie* next;
 };
 
-void setMovieTitleFromString(struct movie* movieNode, char* token);
+void removeNodeFromList(struct movie*);
 
-void setMovieYearFromString(struct movie* movieNode, char* movieYear);
+void setMovieTitleFromString(struct movie*, char*);
 
-void setMovieRatingFromString(struct movie* movieNode, char* ratingString);
+void setMovieYearFromString(struct movie*, char*);
+
+void setMovieRatingFromString(struct movie*, char*);
 
 char** formatLanguageStringArray(char*, char**);
 

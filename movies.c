@@ -8,10 +8,15 @@
 
 
 
+void removeNodeFromList(struct movie* movieNode) {
+	free(movieNode->title);
+	free(movieNode->languages);
+	free(movieNode);
+}
+
 void setMovieTitleFromString(struct movie* movieNode, char* titleString) {
 	movieNode->title = (char*)calloc(strlen(titleString) + 1, sizeof(char));
 	strcpy(movieNode->title, titleString);
-
 }
 
 void setMovieYearFromString(struct movie* movieNode, char* movieYearString) {
@@ -23,13 +28,12 @@ void setMovieRatingFromString(struct movie* movieNode, char* ratingString) {
 }
 
 /*
-* formatLanguageStringArray
-* pre: movie language string enclosed by [], allocated array of strings
-* output: array of language strings
+* name: formatLanguageStringArray(char*, char**)
 * desc: takes the raw movie language string and a dynamic array of strings
 *		and parses the languages to construct an array of strings for the
 *		movie node.
-* 
+* pre: movie language string enclosed by [], allocated array of strings
+* return: array of language strings
 */
 
 char** formatLanguageStringArray(char* currLine, char** languageArray) {
@@ -55,13 +59,18 @@ char** formatLanguageStringArray(char* currLine, char** languageArray) {
 }
 
 
+/*
+* name: creatMovieFromLine(char*)
+* desc: takes a comma-delimited line and fills a new movie node
+*		with data from the line
+* pre:  comma-delimited string from .csv file
+* return: new movie node with next pointing to NULL
+*/
 struct movie *createMovieFromLine(char* fileLine) {
-	/* //create new movie node
-	*     //parse line into tokens
-	*     //put tokens into new movie node
-	*/
 	struct movie* movieNode = (struct movie*)malloc(sizeof(struct movie));
-	char** languageArray = (char**)calloc(5, sizeof(char*));
+
+	char** languageStringArray = (char**)calloc(5, sizeof(char*));
+
 	char* savePtr;
 
 	/* Retrieve the title token*/
@@ -75,7 +84,7 @@ struct movie *createMovieFromLine(char* fileLine) {
 	/* Retrieve the Languages token*/
 	/* movieNode->languages = (char**)malloc(5 * sizeof(char*));*/
 	token = strtok_r(NULL, ",", &savePtr);
-	movieNode->languages = formatLanguageStringArray(token, languageArray);
+	movieNode->languages = formatLanguageStringArray(token, languageStringArray);
 
 	/* Retrieve the Rating token*/
 	token = strtok_r(NULL, "\n", &savePtr);
@@ -86,6 +95,13 @@ struct movie *createMovieFromLine(char* fileLine) {
 	return movieNode;
 }
 
+/*
+* name: createLinkedListMoviesFromCSV(FILE*)
+* desc: forms a singly linked list of struct movie pointers
+*		from a specifically formatted .csv file
+* pre:  .csv file opened in read-only mode
+* return: pointer to head of linked list of movie structs
+*/
 struct movie *createLinkedListMoviesFromCSV(FILE* movieFile) {
 	/* //Get movie info from .csv file
 	*    //create movie nodes from each file line
@@ -94,7 +110,6 @@ struct movie *createLinkedListMoviesFromCSV(FILE* movieFile) {
 	char* nextFileLine = NULL;
 	size_t len = 0;
 	ssize_t numberOfCharsRead;
-	char* token;
 
 	struct movie* head = NULL;
 	struct movie* tail = NULL;
@@ -120,18 +135,15 @@ struct movie *createLinkedListMoviesFromCSV(FILE* movieFile) {
 	}
 
 	free(nextFileLine);
-	fclose(movieFile);
 
 	return head;
 }
 
 /*
-* menu()
+* name: menu()
 * desc: presents a menu to the user and prompts for input
 * pre:
-* input:
-* output: int from 1 to 4 representing user choice
-* 
+* return: int from 1 to 4 representing user choice
 */
 int menu() {
 	/* //Present Menu and get input
