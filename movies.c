@@ -6,31 +6,36 @@
 **************************************************************/
 #include "movies.h"
 
-char** formatLanguageStringArray(char* token) {
+
+/*
+* formatLanguageStringArray
+* pre: movie language string enclosed by [], allocated array of strings
+* output: array of language strings
+* desc: takes the raw movie language string and a dynamic array of strings
+*		and parses the languages to construct an array of strings for the
+*		movie node.
+* 
+*/
+char** formatLanguageStringArray(char* currLine, char** languageArray) {
+	int i;
 	char* languageSavePtr;
-	char* unformattedArrayToken;
-	char** languageArray;
-	int i = 0;
+	char* savePtrTwo;
 
-	/* Remove the '[' character*/
-	strcpy(unformattedArrayToken, token + 1);
+	char* token = strtok_r(currLine, "[", &languageSavePtr);
 
-	/* Remove the ']' character*/
-	unformattedArrayToken[strlen(unformattedArrayToken) - 1] = '\0';
-
-	while (token != NULL) {
+	/* Separate languages into individual strings*/
+	for (i = 0; i < 5; i++) {
 		if (i == 0) {
-			token = strtok_r(unformattedArrayToken, ";", &languageSavePtr);
-			languageArray[i] = &token;
+			token = strtok_r(token, ";", &savePtrTwo);
 		}
-
 		else {
-			token = strtok_r(NULL, ";", &languageSavePtr);
-			languageArray[i] = &token;
+			token = strtok_r(NULL, ";", &savePtrTwo);
 		}
 
-		i++;
+		languageArray[i] = token;
 	}
+
+	return languageArray;
 }
 
 
@@ -40,6 +45,7 @@ struct movie *createMovieFromLine(char* fileLine) {
 	*     //put tokens into new movie node
 	*/
 	struct movie* movieNode = (struct movie*)malloc(sizeof(struct movie));
+	char** languageArray = (char**)calloc(5, sizeof(char*));
 	char* savePtr;
 
 	/* Retrieve the title token*/
@@ -55,13 +61,9 @@ struct movie *createMovieFromLine(char* fileLine) {
 	/* Retrieve the Languages token*/
 	movieNode->languages = (char**)malloc(5 * sizeof(char*));
 
-	for (int i = 0; i < 5; i++) {
-		movieNode->languages[i] = (char*)malloc(20 * sizeof(char));
-	}
-
 	token = strtok_r(NULL, ",", &savePtr);
 
-	movieNode->languages = formatLanguageStringArray(token);
+	movieNode->languages = formatLanguageStringArray(token, languageArray);
 
 	/* Retrieve the Rating token*/
 	token = strtok_r(NULL, "\n", &savePtr);

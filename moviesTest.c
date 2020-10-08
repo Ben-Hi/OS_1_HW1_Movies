@@ -10,7 +10,16 @@
 
 /*#include "movies.h"
 */
-void formatLanguageStringArray(char* currLine, char** languageArray) {
+
+struct movie {
+	char* title;
+	int* year;
+	char** languages;
+	double* rating;
+	struct movie* next;
+};
+
+char** formatLanguageStringArray(char* currLine, char** languageArray) {
 	int i;
 	char* languageSavePtr;
 	char* savePtrTwo;
@@ -30,6 +39,8 @@ void formatLanguageStringArray(char* currLine, char** languageArray) {
 
 		languageArray[i] = token;
 	}
+
+	return languageArray;
 }
 
 int main(int argc, char* argv[]) {
@@ -43,7 +54,7 @@ int main(int argc, char* argv[]) {
 
 	nread = getline(&currLine, &len, textFile);
 	
-	formatLanguageStringArray(currLine, languageArray);
+	languageArray = formatLanguageStringArray(currLine, languageArray);
 
 	printf("Here is the language array: \n");
 
@@ -54,7 +65,6 @@ int main(int argc, char* argv[]) {
 	printf("\n");
 
 	fclose(textFile);
-
 	free(languageArray);
 
 	return 0;
