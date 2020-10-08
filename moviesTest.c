@@ -13,11 +13,46 @@
 
 struct movie {
 	char* title;
-	int* year;
+	int year;
 	char** languages;
-	double* rating;
+	double rating;
 	struct movie* next;
 };
+
+void setMovieTitle(struct movie* movieNode, char* token) {
+	movieNode->title = (char*)calloc(strlen(token) + 1, sizeof(char));
+	strcpy(movieNode->title, token);
+
+}
+
+void setMovieYear(struct movie* movieNode, char* movieYear) {
+	movieNode->year = atoi(movieYear);
+}
+
+void setMovieRating(struct movie* movieNode, char* ratingString) {
+	movieNode->rating = strtod(ratingString, NULL);
+}
+
+int main(int argc, char* argv[]) {
+	char* token = "The Avengers";
+	char* year = "2015";
+	char* rating = "9.5";
+
+	struct movie* movieNode = (struct movie*)malloc(sizeof(struct movie));
+
+	setMovieTitle(movieNode, token);
+	setMovieYear(movieNode, year);
+	setMovieRating(movieNode, rating);
+
+	printf("The movie title is: %s\n", movieNode->title);
+	printf("The movie year is: %d\n", movieNode->year);
+	printf("The movie rating is: %.1f\n", movieNode->rating);
+
+	free(movieNode->title);
+	free(movieNode);
+
+	return 0;
+}
 
 char** formatLanguageStringArray(char* currLine, char** languageArray) {
 	int i;
@@ -43,17 +78,17 @@ char** formatLanguageStringArray(char* currLine, char** languageArray) {
 	return languageArray;
 }
 
-int main(int argc, char* argv[]) {
+void test_formatLanguageStringArray() {
 	int i = 0;
 	char** languageArray = (char**)calloc(5, sizeof(char*));
 	FILE* textFile = fopen("test.txt", "r");
 
 	char* currLine = NULL;
 	size_t len = 0;
-	ssize_t nread;
 
-	nread = getline(&currLine, &len, textFile);
-	
+	/* getline allocates memory to currLine*/
+	getline(&currLine, &len, textFile);
+
 	languageArray = formatLanguageStringArray(currLine, languageArray);
 
 	printf("Here is the language array: \n");
@@ -65,7 +100,6 @@ int main(int argc, char* argv[]) {
 	printf("\n");
 
 	fclose(textFile);
+	free(currLine);
 	free(languageArray);
-
-	return 0;
 }

@@ -16,13 +16,19 @@
  */
 struct movie {
 	char* title;
-	int* year;
+	int year;
 	char** languages;
-	double* rating;
+	double rating;
 	struct movie* next;
 };
 
-char** formatLanguageStringArray(char*);
+void setMovieTitleFromString(struct movie* movieNode, char* token);
+
+void setMovieYearFromString(struct movie* movieNode, char* movieYear);
+
+void setMovieRatingFromString(struct movie* movieNode, char* ratingString);
+
+char** formatLanguageStringArray(char*, char**);
 
 struct movie *createMovieFromLine(char*);
 

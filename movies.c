@@ -7,6 +7,21 @@
 #include "movies.h"
 
 
+
+void setMovieTitleFromString(struct movie* movieNode, char* token) {
+	movieNode->title = (char*)calloc(strlen(token) + 1, sizeof(char));
+	strcpy(movieNode->title, token);
+
+}
+
+void setMovieYearFromString(struct movie* movieNode, char* movieYear) {
+	movieNode->year = atoi(movieYear);
+}
+
+void setMovieRatingFromString(struct movie* movieNode, char* ratingString) {
+	movieNode->rating = strtod(ratingString, NULL);
+}
+
 /*
 * formatLanguageStringArray
 * pre: movie language string enclosed by [], allocated array of strings
@@ -16,6 +31,7 @@
 *		movie node.
 * 
 */
+
 char** formatLanguageStringArray(char* currLine, char** languageArray) {
 	int i;
 	char* languageSavePtr;
@@ -50,24 +66,22 @@ struct movie *createMovieFromLine(char* fileLine) {
 
 	/* Retrieve the title token*/
 	char* token = strtok_r(fileLine, ",", &savePtr);
-	movieNode->title = (struct movie*)calloc(strlen(token) + 1, sizeof(char));
+	movieNode->title = (char*)calloc(strlen(token) + 1, sizeof(char));
 	strcpy(movieNode->title, token);
 
 	/* Retrieve the Year token*/
 	token = strtok_r(NULL, ",", &savePtr);
-	movieNode->year = (int*)malloc(sizeof(int));
+	/* movieNode->year = (int*)malloc(sizeof(int));*/
 	movieNode->year = atoi(token);
 
 	/* Retrieve the Languages token*/
-	movieNode->languages = (char**)malloc(5 * sizeof(char*));
-
+	/* movieNode->languages = (char**)malloc(5 * sizeof(char*));*/
 	token = strtok_r(NULL, ",", &savePtr);
-
 	movieNode->languages = formatLanguageStringArray(token, languageArray);
 
 	/* Retrieve the Rating token*/
 	token = strtok_r(NULL, "\n", &savePtr);
-	movieNode->rating = (double*)malloc(sizeof(double));
+	/* movieNode->rating = (double*)malloc(sizeof(double));*/
 	movieNode->rating = strtod(token, NULL);
 
 	movieNode->next = NULL;
