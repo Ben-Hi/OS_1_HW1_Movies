@@ -17,16 +17,6 @@
 
 int main(int argc, char* argv[]) {
 	/****************************************
-	* //Get movie info from .csv file
-	*   //open file
-	* 
-	*   //read file line by line
-	*     //create new movie node
-	*     //parse line into tokens
-	*     //put tokens into new movie node
-	*     //place node into linked list
-	*     //move to next line
-	* 
 	*   //close file
 	*   //"Processed file XYZ and parsed data for M movies"
 	*  
@@ -46,40 +36,40 @@ int main(int argc, char* argv[]) {
 	* 
 	*   //4. Exit
 	*/
+	struct movie* head;
 
-	/*
 	int choice = 0;
 	FILE* movieFile;
 
+	if (argc != 2) {
+		printf("Please enter a .csv file when running the program.\n");
+		return 0;
+	}
 	
-	if (!(movieFile = open(argv[1]))) {
+	if (!(movieFile = fopen(argv[1], "r"))) {
 		printf("Could not open file.\n");
 		return 0;
 	}
 
-	readMoviesFromCSV(movieFile);
+	head = createLinkedListMoviesFromCSV(movieFile, argv[1]);
+	fclose(movieFile);
 
-	while ((choice = menu()) != EXIT) {
+	while (choice = menu()) {
 
 		switch (choice) {
 
 		case FILTER_BY_YEAR:
-			printMoviesInYear();
 			break;
 
 		case FILTER_BY_HIGHEST_RATING:
-			printHighestRatingPerYear();
 			break;
 
 		case FILTER_BY_LANGUAGE:
-			printMoviesInSpecifiedLanguage();
 			break;
 
 		case EXIT:
-			break;
+			freeLinkedList(head);
+			return 0;
 		}
 	}
-	*/
-
-	return 0;
 }

@@ -14,6 +14,16 @@ void removeNodeFromList(struct movie* movieNode) {
 	free(movieNode);
 }
 
+void freeLinkedList(struct movie* head) {
+	struct movie* temp = head;
+
+	while (temp != NULL) {
+		head = head->next;
+		removeNodeFromList(temp);
+		temp = head;
+	}
+}
+
 void setMovieTitleFromString(struct movie* movieNode, char* titleString) {
 	movieNode->title = (char*)calloc(strlen(titleString) + 1, sizeof(char));
 	strcpy(movieNode->title, titleString);
@@ -102,10 +112,12 @@ struct movie *createMovieFromLine(char* fileLine) {
 * pre:  .csv file opened in read-only mode
 * return: pointer to head of linked list of movie structs
 */
-struct movie *createLinkedListMoviesFromCSV(FILE* movieFile) {
+struct movie *createLinkedListMoviesFromCSV(FILE* movieFile, char* fileName) {
 	/* //Get movie info from .csv file
 	*    //create movie nodes from each file line
 	*/
+
+	int numMoviesRead = 0;
 
 	char* nextFileLine = NULL;
 	size_t len = 0;
@@ -132,7 +144,11 @@ struct movie *createLinkedListMoviesFromCSV(FILE* movieFile) {
 			tail->next = newMovieNode;
 			tail = newMovieNode;
 		}
+
+		numMoviesRead++;
 	}
+
+	printf("Processed file %s and parsed data for %d movies\n\n", fileName, numMoviesRead);
 
 	free(nextFileLine);
 

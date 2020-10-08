@@ -24,6 +24,8 @@ struct movie {
 
 void removeNodeFromList(struct movie*);
 
+void freeLinkedList(struct movie*);
+
 void setMovieTitleFromString(struct movie*, char*);
 
 void setMovieYearFromString(struct movie*, char*);
@@ -34,7 +36,7 @@ char** formatLanguageStringArray(char*, char**);
 
 struct movie *createMovieFromLine(char*);
 
-struct movie *createLinkedListMoviesFromCSV(FILE*);
+struct movie *createLinkedListMoviesFromCSV(FILE*, char*);
 
 int menu();
 

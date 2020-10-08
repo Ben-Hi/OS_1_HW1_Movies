@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 
 	FILE* csvFile = fopen(argv[1], "r");
 
-	struct movie* head = createLinkedListMoviesFromCSV(csvFile);
+	struct movie* head = createLinkedListMoviesFromCSV(csvFile, argv[1]);
 	struct movie* temp = head;
 
 	fclose(csvFile);
