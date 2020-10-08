@@ -10,56 +10,50 @@
 
 /*#include "movies.h"
 */
-char** formatLanguageStringArray(char* token) {
+void formatLanguageStringArray(char* currLine, char** languageArray) {
+	int i;
 	char* languageSavePtr;
-	char* unformattedArrayToken;
-	char** languageArray = (char**)calloc(5,sizeof(char*));
-	int i = 0;
+	char* savePtrTwo;
 
-	unformattedArrayToken = strtok_r(token, "[", &languageSavePtr);
+	char* token = strtok_r(currLine, "[", &languageSavePtr);
 
-	unformattedArrayToken = strtok_r(NULL, "]", &languageSavePtr);
+	char* formattedLine = strtok_r(token, "]", &savePtrTwo);
 
-	/*
-	token[strlen(token) - 1] = '\0';
 
-	strcpy(token, token + 1);
-
-	printf("Here is the array before formatting: %s\n", token);
-	*/
-	while (i != 4) {
+	for (i = 0; i < 5; i++) {
 		if (i == 0) {
-			unformattedArrayToken = strtok_r(NULL, ";", &languageSavePtr);
-			languageArray[i] = unformattedArrayToken;
+			token = strtok_r(token, ";", &savePtrTwo);
 		}
-
 		else {
-			unformattedArrayToken = strtok_r(NULL, ";", &languageSavePtr);
-			languageArray[i] = unformattedArrayToken;
+			token = strtok_r(NULL, ";", &savePtrTwo);
 		}
 
-		i++;
+		languageArray[i] = token;
 	}
-
-	printf("Here is the language array of the helper function: %s\n", token);
-	return languageArray;
 }
 
 int main(int argc, char* argv[]) {
 	int i = 0;
-	char** languageArray;
+	char** languageArray = (char**)calloc(5, sizeof(char*));
+	FILE* textFile = fopen("test.txt", "r");
 
-	char* token = "[English;Spanish;Chinese;Portugese]";
+	char* currLine = NULL;
+	size_t len = 0;
+	ssize_t nread;
 
-	languageArray = formatLanguageStringArray(token);
+	nread = getline(&currLine, &len, textFile);
+	
+	formatLanguageStringArray(currLine, languageArray);
 
 	printf("Here is the language array: \n");
 
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < 5; i++) {
 		printf("%s ", languageArray[i]);
 	}
 
 	printf("\n");
+
+	fclose(textFile);
 
 	free(languageArray);
 
