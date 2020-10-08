@@ -8,14 +8,14 @@
 
 
 
-void setMovieTitleFromString(struct movie* movieNode, char* token) {
-	movieNode->title = (char*)calloc(strlen(token) + 1, sizeof(char));
-	strcpy(movieNode->title, token);
+void setMovieTitleFromString(struct movie* movieNode, char* titleString) {
+	movieNode->title = (char*)calloc(strlen(titleString) + 1, sizeof(char));
+	strcpy(movieNode->title, titleString);
 
 }
 
-void setMovieYearFromString(struct movie* movieNode, char* movieYear) {
-	movieNode->year = atoi(movieYear);
+void setMovieYearFromString(struct movie* movieNode, char* movieYearString) {
+	movieNode->year = atoi(movieYearString);
 }
 
 void setMovieRatingFromString(struct movie* movieNode, char* ratingString) {
@@ -66,13 +66,11 @@ struct movie *createMovieFromLine(char* fileLine) {
 
 	/* Retrieve the title token*/
 	char* token = strtok_r(fileLine, ",", &savePtr);
-	movieNode->title = (char*)calloc(strlen(token) + 1, sizeof(char));
-	strcpy(movieNode->title, token);
+	setMovieTitleFromString(movieNode, token);
 
 	/* Retrieve the Year token*/
 	token = strtok_r(NULL, ",", &savePtr);
-	/* movieNode->year = (int*)malloc(sizeof(int));*/
-	movieNode->year = atoi(token);
+	setMovieYearFromString(movieNode, token);
 
 	/* Retrieve the Languages token*/
 	/* movieNode->languages = (char**)malloc(5 * sizeof(char*));*/
@@ -81,8 +79,7 @@ struct movie *createMovieFromLine(char* fileLine) {
 
 	/* Retrieve the Rating token*/
 	token = strtok_r(NULL, "\n", &savePtr);
-	/* movieNode->rating = (double*)malloc(sizeof(double));*/
-	movieNode->rating = strtod(token, NULL);
+	setMovieRatingFromString(movieNode, token);
 
 	movieNode->next = NULL;
 
