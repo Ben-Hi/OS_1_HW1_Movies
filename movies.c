@@ -209,19 +209,9 @@ int menu() {
 
 void filterPrintYear(struct movie* head) {
 	int yearFilter;
+	int foundMoviesInYear = 0;
 
 	struct movie* copy = head;
-
-	printf("Here are all the movies I have in the list: \n\n");
-
-	while (copy != NULL) {
-		printf("%s, %d\n", copy->title, copy->year);
-
-		copy = copy->next;
-	}
-
-	printf("\n");
-	copy = head;
 
 	printf("Enter the year for which you want to see movies: ");
 	scanf("%d", &yearFilter);
@@ -231,16 +221,87 @@ void filterPrintYear(struct movie* head) {
 
 		if (copy->year == yearFilter) {
 			printf("%s\n", copy->title);
+
+			foundMoviesInYear = 1;
 		}
 
 		copy = copy->next;
+	}
+
+	if (foundMoviesInYear == 0) {
+		printf("No data about movies released in the year %d\n", yearFilter);
 	}
 
 	printf("\n");
 }
 
 void filterPrintHighestRating(struct movie* head) {
+	int i;
+	int foundYearInArray;
+	int numberOfUniqueYears = 0;
+	int uniqueYearArr[120] = { 0 };
+	struct movie* index = head;
+	struct movie* highestRatedMovie;
 
+	/* Find every unique year in the movie list and place it in the uniqueYearArr array*/
+	while (index != NULL) {
+		foundYearInArray = 0;
+
+		/* The year was already in the array, move to the next node*/
+		for (i = 0; i < 120; i++) {
+			if (index->year == uniqueYearArr[i]) {
+				foundYearInArray = 1;
+				break;
+			}
+		}
+
+		/* The year was not in the array, add it and move to the next node*/
+		if (foundYearInArray == 0) {
+			uniqueYearArr[numberOfUniqueYears] = index->year;
+			numberOfUniqueYears++;
+		}
+
+		index = index->next;
+	}
+
+	index = head;
+
+	/* Filter the list by each unique year and print the highest rated movie among the unique years*/
+	for (i = 0; i < numberOfUniqueYears; i++) {
+		highestRatedMovie = NULL;
+		index = head;
+
+		/* Check for the unique year*/
+		while (index != NULL) {
+
+			/* The first time the unique year is encountered, set highestRatedMovie to that node*/
+			if (index->year == uniqueYearArr[i] && highestRatedMovie == NULL) {
+				highestRatedMovie = index;
+				index = index->next;
+			}
+
+			/* If a higher rated movie in the unique year is found, change highestRatedMovie to that movie*/
+			else if (index->year == uniqueYearArr[i] && index->rating > highestRatedMovie->rating) {
+				highestRatedMovie = index;
+				index = index->next;
+			}
+
+			else {
+				index = index->next;
+			}
+		}
+
+		/* Theoretically unnecessary, but me and theories...
+		if (highestRatedMovie == NULL) {
+			continue;
+		}
+		*/
+
+		/* Print the highestRatedMovie in the correct format*/
+		printf("%d %.1f %s\n", highestRatedMovie->year, highestRatedMovie->rating, highestRatedMovie->title);
+	}
+
+	printf("\n");
 }
 
 void filterPrintLanguage(struct movie* head) {
