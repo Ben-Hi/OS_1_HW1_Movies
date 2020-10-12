@@ -1,19 +1,22 @@
-/**************************************************************
+/********************************************************************************************************************
 * Author: Benjamin Hillen
-* Date:   2 October 2020
+* Date:   11 October 2020
 *
-* Description: Declaration of functions required to implement
-*			   Assignment 1.
-**************************************************************/
+* Description: Declaration of functions required to implement Assignment 1. Contains functions that implement the menu,
+*			   linked list and node creation, memory management, file parsing, and filtering.
+********************************************************************************************************************/
 #ifndef MOVIES_H
 #define MOVIES_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/* Each movie has a title, a year, a list of languages, a rating,
- * and a pointer to the next movie in the list
- */
+/***************************************************************** 
+*							struct movie
+ * Each movie has a title, a year, a list of languages, a rating,
+ * and a pointer to the next movie in the list. Serves as a node
+ * in the linked list.
+ ****************************************************************/
 struct movie {
 	char* title;
 	int year;
@@ -23,28 +26,36 @@ struct movie {
 	struct movie* next;
 };
 
-void removeNodeFromList(struct movie*);
-
-void freeLinkedList(struct movie*);
-
+/******************************************
+*			Setter Functions
+******************************************/
 void setMovieTitleFromString(struct movie*, char*);
-
 void setMovieYearFromString(struct movie*, char*);
-
 void setMovieRatingFromString(struct movie*, char*);
-
 void setMovieLanguagesFromString(struct movie*, char*);
 
-struct movie *createMovieFromLine(char*);
+/******************************************
+*			Memory Management
+******************************************/
+void removeNodeFromList(struct movie*);
+void freeLinkedList(struct movie*);
 
+/******************************************
+*			Linked List Creation
+******************************************/
+struct movie *createMovieFromLine(char*);
 struct movie *createLinkedListMoviesFromCSV(FILE*, char*);
 
-int menu();
-
+/******************************************
+*				Filters
+******************************************/
 void filterPrintYear(struct movie*);
-
 void filterPrintHighestRating(struct movie*);
-
 void filterPrintLanguage(struct movie*);
+
+/******************************************
+*				  Menu
+******************************************/
+int menu();
 
 #endif

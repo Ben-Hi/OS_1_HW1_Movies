@@ -1,18 +1,24 @@
-/**************************************************************
+/********************************************************************************************************************
 * Author: Benjamin Hillen
-* Date:   2 October 2020
+* Date:   11 October 2020
 *
-* Description: Implementation of functions defined in movies.h
-**************************************************************/
+* Description: Implementation of the Movies assignment. Contains functions that implement the menu, linked list and
+*			   node creation, memory management, file parsing, and filtering.
+********************************************************************************************************************/
 #include "movies.h"
 
-#define LANGUAGE_ARR_SIZE 5
-
+/****************************************************
+* name: removeNodeFromList(struct movie*)
+* desc: frees the memory allocated to a movie struct
+*       node in a linked list.
+* input: pointer to the movie node to be freed.
+*****************************************************/
 void removeNodeFromList(struct movie* movieNode) {
 	int i;
 
 	free(movieNode->title);
 
+	/* Free the memory allocated to each language string*/
 	for (i = 0; i < movieNode->numLanguages; i++) {
 		free(movieNode->languages[i]);
 	}
@@ -21,9 +27,15 @@ void removeNodeFromList(struct movie* movieNode) {
 	free(movieNode);
 }
 
+/****************************************************
+* name: freeLinkedList(struct movie*)
+* desc: frees the memory allocated to a linked list.
+* input: head pointer of the linked list.
+*****************************************************/
 void freeLinkedList(struct movie* head) {
 	struct movie* temp = head;
 
+	/* Free each node in the list*/
 	while (temp != NULL) {
 		head = head->next;
 		removeNodeFromList(temp);
@@ -31,19 +43,43 @@ void freeLinkedList(struct movie* head) {
 	}
 }
 
+/****************************************************
+* name: setMovieTitleFromString(struct movie*, char*)
+* desc: sets the title string member of a movie 
+*		struct.
+* input: movie node to be set, title string.
+*****************************************************/
 void setMovieTitleFromString(struct movie* movieNode, char* titleString) {
 	movieNode->title = (char*)calloc(strlen(titleString) + 1, sizeof(char));
 	strcpy(movieNode->title, titleString);
 }
 
+/****************************************************
+* name: setMovieYearFromString(struct movie*, char*)
+* desc: sets the year int member of a movie
+*		struct.
+* input: movie node to be set, year string.
+*****************************************************/
 void setMovieYearFromString(struct movie* movieNode, char* movieYearString) {
 	movieNode->year = atoi(movieYearString);
 }
 
+/****************************************************
+* name: setMovieRatingFromString(struct movie*, char*)
+* desc: sets the rating double member of a movie
+*		struct.
+* input: movie node to be set, rating string.
+*****************************************************/
 void setMovieRatingFromString(struct movie* movieNode, char* ratingString) {
 	movieNode->rating = strtod(ratingString, NULL);
 }
 
+/****************************************************
+* name: setMovieLanguagesFromString(struct movie*, char*)
+* desc: sets the languages string array of a movie
+*		struct.
+* input: movie pointer to be set, language string.
+*****************************************************/
 void setMovieLanguagesFromString(struct movie* movieNode, char* currLine) {
 	int i;
 	int count = 0;
@@ -71,11 +107,11 @@ void setMovieLanguagesFromString(struct movie* movieNode, char* currLine) {
 
 	i = 0;
 
-	/* Allocate memory to the movie node language arra*/
+	/* Allocate memory to the movie node language array*/
 	movieNode->languages = (char**)calloc(count, sizeof(char*));
 	movieNode->numLanguages = count;
 
-	/* Parse the languages using ";}" as delimiters, allocating memory to the language string*/
+	/* Parse the languages using "[:]" as delimiters, allocating memory to the language string*/
 	token = strtok_r(currLine, "[;]", &languageSavePtr);
 	while (token != NULL) {
 		movieNode->languages[i] = (char*)calloc(strlen(token) + 1, sizeof(char));
@@ -87,13 +123,13 @@ void setMovieLanguagesFromString(struct movie* movieNode, char* currLine) {
 }
 
 
-/*
+/****************************************************
 * name: creatMovieFromLine(char*)
-* desc: takes a comma-delimited line and fills a new movie node
-*		with data from the line
-* pre:  comma-delimited string from .csv file
-* return: new movie node with next pointing to NULL
-*/
+* desc: takes a comma-delimited line and fills a new
+*		movie node with data from the line. Returns
+*		a pointer to the new node.
+* input: comma-delimited string containing movie data.
+****************************************************/
 struct movie *createMovieFromLine(char* fileLine) {
 	struct movie* movieNode = (struct movie*)malloc(sizeof(struct movie));
 
@@ -103,15 +139,15 @@ struct movie *createMovieFromLine(char* fileLine) {
 	char* token = strtok_r(fileLine, ",", &savePtr);
 	setMovieTitleFromString(movieNode, token);
 
-	/* Retrieve the Year token*/
+	/* Retrieve the year token*/
 	token = strtok_r(NULL, ",", &savePtr);
 	setMovieYearFromString(movieNode, token);
 
-	/* Retrieve the Languages token*/
+	/* Retrieve the languages token*/
 	token = strtok_r(NULL, ",", &savePtr);
 	setMovieLanguagesFromString(movieNode, token);
 
-	/* Retrieve the Rating token*/
+	/* Retrieve the rating token*/
 	token = strtok_r(NULL, "\n", &savePtr);
 	setMovieRatingFromString(movieNode, token);
 
@@ -120,18 +156,15 @@ struct movie *createMovieFromLine(char* fileLine) {
 	return movieNode;
 }
 
-/*
-* name: createLinkedListMoviesFromCSV(FILE*)
-* desc: forms a singly linked list of struct movie pointers
-*		from a specifically formatted .csv file
-* pre:  .csv file opened in read-only mode
-* return: pointer to head of linked list of movie structs
-*/
+/****************************************************
+* name: createLinkedListMoviesFromCSV(FILE*, char*)
+* desc: creates a singly linked list of movie pointers
+*		from a .csv file. Returns a pointer to the
+*		head of the linked list.
+* input: pointer to .csv file opened to "r", name of
+*		the .csv file.
+****************************************************/
 struct movie *createLinkedListMoviesFromCSV(FILE* movieFile, char* fileName) {
-	/* //Get movie info from .csv file
-	*    //create movie nodes from each file line
-	*/
-
 	int numMoviesRead = 0;
 
 	char* nextFileLine = NULL;
@@ -141,7 +174,7 @@ struct movie *createLinkedListMoviesFromCSV(FILE* movieFile, char* fileName) {
 	struct movie* head = NULL;
 	struct movie* tail = NULL;
 
-	/* The first line has no movies*/
+	/* The first line has no movies, skip it*/
 	getline(&nextFileLine, &len, movieFile);
 
 	/* Make movie nodes and link them until there are no more lines in the file*/
@@ -170,12 +203,12 @@ struct movie *createLinkedListMoviesFromCSV(FILE* movieFile, char* fileName) {
 	return head;
 }
 
-/*
+/****************************************************
 * name: menu()
-* desc: presents a menu to the user and prompts for input
-* pre:
-* return: int from 1 to 4 representing user choice
-*/
+* desc: presents a menu to the user and prompts them
+*		for input. Returns an int representing the
+*		users choice.
+****************************************************/
 int menu() {
 	/* //Present Menu and get input
 	*   //1. Show movies released in the specified year
@@ -207,12 +240,20 @@ int menu() {
 	return choice;
 }
 
+/****************************************************
+* name: filterPrintYear(struct movie*)
+* desc: asks the user for a year and prints the 
+*		movies released in that year or informs them
+*		if no movies were released in that year.
+*input: head pointer of the movie linked list.
+****************************************************/
 void filterPrintYear(struct movie* head) {
 	int yearFilter;
 	int foundMoviesInYear = 0;
 
 	struct movie* copy = head;
 
+	/* Get user input*/
 	printf("Enter the year for which you want to see movies: ");
 	scanf("%d", &yearFilter);
 
@@ -228,6 +269,7 @@ void filterPrintYear(struct movie* head) {
 		copy = copy->next;
 	}
 
+	/* Inform the user if no movies were found*/
 	if (foundMoviesInYear == 0) {
 		printf("No data about movies released in the year %d\n", yearFilter);
 	}
@@ -235,6 +277,12 @@ void filterPrintYear(struct movie* head) {
 	printf("\n");
 }
 
+/****************************************************
+* name: filterPrintHighestRating(struct movie*)
+* desc: prints the highest rated movie from every
+*		year in the linked list.
+*input: head pointer of the movie linked list.
+****************************************************/
 void filterPrintHighestRating(struct movie* head) {
 	int i;
 	int foundYearInArray;
@@ -291,19 +339,19 @@ void filterPrintHighestRating(struct movie* head) {
 			}
 		}
 
-		/* Theoretically unnecessary, but me and theories...
-		if (highestRatedMovie == NULL) {
-			continue;
-		}
-		*/
-
-		/* Print the highestRatedMovie in the correct format*/
+		/* Print the highestRatedMovie*/
 		printf("%d %.1f %s\n", highestRatedMovie->year, highestRatedMovie->rating, highestRatedMovie->title);
 	}
 
 	printf("\n");
 }
 
+/****************************************************
+* name: filterPrintLanguage(struct movie*)
+* desc: asks the user for a language and prints 
+*		the movies released in that language.
+*input: head pointer of the movie linked list.
+****************************************************/
 void filterPrintLanguage(struct movie* head) {
 	struct movie* copy = head;
 	copy = head;
@@ -316,6 +364,7 @@ void filterPrintLanguage(struct movie* head) {
 
 	/* Iterate through the list, print the year and title of movies with a language matching the languageFilter*/
 	while (copy != NULL) {
+		/* Check each language that the movie has*/
 		for (i = 0; i < copy->numLanguages; i++) {
 			if (strcmp(copy->languages[i], languageFilter) == 0) {
 				printf("%d %s\n", copy->year, copy->title);
