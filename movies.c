@@ -44,14 +44,6 @@ void setMovieRatingFromString(struct movie* movieNode, char* ratingString) {
 	movieNode->rating = strtod(ratingString, NULL);
 }
 
-/*
-* name: formatLanguageStringArray(char*, char**)
-* desc: takes the raw movie language string and a dynamic array of strings
-*		and parses the languages to construct an array of strings for the
-*		movie node.
-* pre: movie language string enclosed by [], allocated array of strings
-* return: array of language strings
-*/
 void setMovieLanguagesFromString(struct movie* movieNode, char* currLine) {
 	int i;
 	int count = 0;
@@ -253,30 +245,29 @@ void filterPrintHighestRating(struct movie* head) {
 
 void filterPrintLanguage(struct movie* head) {
 	struct movie* copy = head;
-
+	copy = head;
+	char languageFilter[20];
+	int foundMovieWithLanguage = 0;
 	int i;
 
-	char languageFilter[20];
-
-	while (copy != NULL) {
-		printf("%s, %s %s %s %s %s\n", copy->title, copy->languages[0], copy->languages[1], copy->languages[2], copy->languages[3], copy->languages[4]);
-
-		copy = copy->next;
-	}
-
-	copy = head;
 	printf("Enter the language for which you want to see movies (note, the maximum length of a language is 20 characters: ");
 	scanf("%s", languageFilter);
 
 	/* Iterate through the list, print the year and title of movies with a language matching the languageFilter*/
 	while (copy != NULL) {
-		for (i = 0; i < LANGUAGE_ARR_SIZE; i++) {
+		for (i = 0; i < copy->numLanguages; i++) {
 			if (strcmp(copy->languages[i], languageFilter) == 0) {
 				printf("%d %s\n", copy->year, copy->title);
+
+				foundMovieWithLanguage = 1;
 			}
 		}
 
 		copy = copy->next;
+	}
+
+	if (foundMovieWithLanguage == 0) {
+		printf("No data about movies released in %s\n", languageFilter);
 	}
 
 	printf("\n");
