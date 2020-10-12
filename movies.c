@@ -6,10 +6,17 @@
 **************************************************************/
 #include "movies.h"
 
-
+#define LANGUAGE_ARR_SIZE 5
 
 void removeNodeFromList(struct movie* movieNode) {
+	int i;
+
 	free(movieNode->title);
+
+	for (i = 0; i < movieNode->numLanguages; i++) {
+		free(movieNode->languages[i]);
+	}
+
 	free(movieNode->languages);
 	free(movieNode);
 }
@@ -45,27 +52,46 @@ void setMovieRatingFromString(struct movie* movieNode, char* ratingString) {
 * pre: movie language string enclosed by [], allocated array of strings
 * return: array of language strings
 */
-
-char** formatLanguageStringArray(char* currLine, char** languageArray) {
+void setMovieLanguagesFromString(struct movie* movieNode, char* currLine) {
 	int i;
+	int count = 0;
 	char* languageSavePtr;
-	char* savePtrTwo;
+	char* token;
 
-	char* token = strtok_r(currLine, "[", &languageSavePtr);
+	/* If the language line has more characters than '[' and ']', check how many languages there are*/
+	if (strlen(currLine) > 2) {
+		count = 1;
 
-	/* Separate languages into individual strings*/
-	for (i = 0; i < 5; i++) {
-		if (i == 0) {
-			token = strtok_r(token, ";", &savePtrTwo);
+		for (i = 0; i < strlen(currLine); i++) {
+			char element = currLine[i];
+
+			if (element == ';') {
+				count++;
+			}
 		}
-		else {
-			token = strtok_r(NULL, ";", &savePtrTwo);
-		}
-
-		languageArray[i] = token;
 	}
 
-	return languageArray;
+	/* If the movie has no languages, note that and return*/
+	else {
+		movieNode->numLanguages = 0;
+		return;
+	}
+
+	i = 0;
+
+	/* Allocate memory to the movie node language arra*/
+	movieNode->languages = (char**)calloc(count, sizeof(char*));
+	movieNode->numLanguages = count;
+
+	/* Parse the languages using ";}" as delimiters, allocating memory to the language string*/
+	token = strtok_r(currLine, "[;]", &languageSavePtr);
+	while (token != NULL) {
+		movieNode->languages[i] = (char*)calloc(strlen(token) + 1, sizeof(char));
+		strcpy(movieNode->languages[i], token);
+
+		i++;
+		token = strtok_r(NULL, ";]", &languageSavePtr);
+	}
 }
 
 
@@ -79,8 +105,6 @@ char** formatLanguageStringArray(char* currLine, char** languageArray) {
 struct movie *createMovieFromLine(char* fileLine) {
 	struct movie* movieNode = (struct movie*)malloc(sizeof(struct movie));
 
-	char** languageStringArray = (char**)calloc(5, sizeof(char*));
-
 	char* savePtr;
 
 	/* Retrieve the title token*/
@@ -92,9 +116,8 @@ struct movie *createMovieFromLine(char* fileLine) {
 	setMovieYearFromString(movieNode, token);
 
 	/* Retrieve the Languages token*/
-	/* movieNode->languages = (char**)malloc(5 * sizeof(char*));*/
 	token = strtok_r(NULL, ",", &savePtr);
-	movieNode->languages = formatLanguageStringArray(token, languageStringArray);
+	setMovieLanguagesFromString(movieNode, token);
 
 	/* Retrieve the Rating token*/
 	token = strtok_r(NULL, "\n", &savePtr);
@@ -190,4 +213,71 @@ int menu() {
 	printf("\n");
 
 	return choice;
+}
+
+void filterPrintYear(struct movie* head) {
+	int yearFilter;
+
+	struct movie* copy = head;
+
+	printf("Here are all the movies I have in the list: \n\n");
+
+	while (copy != NULL) {
+		printf("%s, %d\n", copy->title, copy->year);
+
+		copy = copy->next;
+	}
+
+	printf("\n");
+	copy = head;
+
+	printf("Enter the year for which you want to see movies: ");
+	scanf("%d", &yearFilter);
+
+	/* Iterate through the list and print any movies whose year matches the yearFilter*/
+	while (copy != NULL) {
+
+		if (copy->year == yearFilter) {
+			printf("%s\n", copy->title);
+		}
+
+		copy = copy->next;
+	}
+
+	printf("\n");
+}
+
+void filterPrintHighestRating(struct movie* head) {
+
+}
+
+void filterPrintLanguage(struct movie* head) {
+	struct movie* copy = head;
+
+	int i;
+
+	char languageFilter[20];
+
+	while (copy != NULL) {
+		printf("%s, %s %s %s %s %s\n", copy->title, copy->languages[0], copy->languages[1], copy->languages[2], copy->languages[3], copy->languages[4]);
+
+		copy = copy->next;
+	}
+
+	copy = head;
+	printf("Enter the language for which you want to see movies (note, the maximum length of a language is 20 characters: ");
+	scanf("%s", languageFilter);
+
+	/* Iterate through the list, print the year and title of movies with a language matching the languageFilter*/
+	while (copy != NULL) {
+		for (i = 0; i < LANGUAGE_ARR_SIZE; i++) {
+			if (strcmp(copy->languages[i], languageFilter) == 0) {
+				printf("%d %s\n", copy->year, copy->title);
+			}
+		}
+
+		copy = copy->next;
+	}
+
+	printf("\n");
 }

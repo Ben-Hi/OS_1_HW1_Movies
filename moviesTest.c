@@ -15,6 +15,8 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
+	int i;
+
 	FILE* csvFile = fopen(argv[1], "r");
 
 	struct movie* head = createLinkedListMoviesFromCSV(csvFile, argv[1]);
@@ -23,7 +25,13 @@ int main(int argc, char* argv[]) {
 	fclose(csvFile);
 
 	while (temp != NULL) {
-		printf("%s, %d, %.1f\n", temp->title, temp->year, temp->rating);
+		printf("%s, %d, %.1f ", temp->title, temp->year, temp->rating);
+
+		for (i = 0; i < temp->numLanguages; i++) {
+			printf("%s ", temp->languages[i]);
+		}
+
+		printf("\n");
 		head = head->next;
 		removeNodeFromList(temp);
 		temp = head;

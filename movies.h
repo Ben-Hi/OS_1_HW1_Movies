@@ -18,6 +18,7 @@ struct movie {
 	char* title;
 	int year;
 	char** languages;
+	int numLanguages;
 	double rating;
 	struct movie* next;
 };
@@ -32,7 +33,7 @@ void setMovieYearFromString(struct movie*, char*);
 
 void setMovieRatingFromString(struct movie*, char*);
 
-char** formatLanguageStringArray(char*, char**);
+void setMovieLanguagesFromString(struct movie*, char*);
 
 struct movie *createMovieFromLine(char*);
 
@@ -40,5 +41,10 @@ struct movie *createLinkedListMoviesFromCSV(FILE*, char*);
 
 int menu();
 
+void filterPrintYear(struct movie*);
+
+void filterPrintHighestRating(struct movie*);
+
+void filterPrintLanguage(struct movie*);
 
 #endif

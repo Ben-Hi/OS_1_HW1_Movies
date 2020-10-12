@@ -41,35 +41,51 @@ int main(int argc, char* argv[]) {
 	int choice = 0;
 	FILE* movieFile;
 
+	/* Check if user provided a single file to parse*/
 	if (argc != 2) {
 		printf("Please enter a .csv file when running the program.\n");
 		return 0;
 	}
 	
+	/* Check if the file can be opened*/
 	if (!(movieFile = fopen(argv[1], "r"))) {
 		printf("Could not open file.\n");
 		return 0;
 	}
 
+	/* Parse the file and get the linked list*/
 	head = createLinkedListMoviesFromCSV(movieFile, argv[1]);
 	fclose(movieFile);
 
-	while (choice = menu()) {
+	/* Present the menu until the user chooses to exit*/
+	while (1) {
+		choice = menu();
 
-		switch (choice) {
+		/* Check if the user entered an invalid option*/
+		if (choice > EXIT || choice < FILTER_BY_YEAR) {
+			printf("That is not a valid menu option, please try again\n");
+		}
 
-		case FILTER_BY_YEAR:
-			break;
+		/* Perform the desired operation*/
+		else{
+			switch (choice) {
 
-		case FILTER_BY_HIGHEST_RATING:
-			break;
+			case FILTER_BY_YEAR:
+				filterPrintYear(head);
+				break;
 
-		case FILTER_BY_LANGUAGE:
-			break;
+			case FILTER_BY_HIGHEST_RATING:
+				filterPrintHighestRating(head);
+				break;
 
-		case EXIT:
-			freeLinkedList(head);
-			return 0;
+			case FILTER_BY_LANGUAGE:
+				filterPrintLanguage(head);
+				break;
+
+			case EXIT:
+				freeLinkedList(head);
+				return 0;
+			}
 		}
 	}
 }

@@ -1,1 +1,1 @@
-build/moviesTest.o: moviesTest.c
+build/moviesTest.o: moviesTest.c movies.h
